@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: html(pageTitle=${booking.id != null ? 'Sửa đặt phòng' : 'Đặt phòng mới'}, activePage='bookings', ~{:: #pageActions}, ~{:: #content})}">
+<head>
+    <title>Form đặt phòng</title>
+</head>
+<body>
+    <div id="pageActions">
+        <a href="/bookings" class="btn btn-secondary">
+            <i class="bi bi-arrow-left me-2"></i>Quay lại
+        </a>
+    </div>
+    
+    <div id="content">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="bi bi-calendar-plus me-2"></i>
+                        <span th:text="${booking.id != null ? 'Sửa thông tin đặt phòng' : 'Đặt phòng mới'}">Form đặt phòng</span>
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{/bookings/save}" th:object="${booking}" method="post">
+                            <input type="hidden" th:field="*{id}">
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="guestId" class="form-label">Khách hàng <span class="text-danger">*</span></label>
+                                    <select class="form-select" id="guestId" name="guestId" required>
+                                        <option value="">-- Chọn khách hàng --</option>
+                                        <option th:each="guest : ${guests}" 
+                                                th:value="${guest.id}" 
+                                                th:text="${guest.fullName + ' - ' + guest.phone}"
+                                                th:selected="${booking.guest != null && booking.guest.id == guest.id}"></option>
+                                    </select>
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label for="roomId" class="form-label">Phòng <span class="text-danger">*</span></label>
+                                    <select class="form-select" id="roomId" name="roomId" required>
+                                        <option value="">-- Chọn phòng --</option>
+                                        <option th:each="room : ${rooms}" 
+                                                th:value="${room.id}" 
+                                                th:text="${room.roomNumber + ' - ' + room.roomType.displayName}"
+                                                th:selected="${booking.room != null && booking.room.id == room.id}"></option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label for="checkInDate" class="form-label">Ngày check-in <span class="text-danger">*</span></label>
+                                    <input type="date" class="form-control" th:field="*{checkInDate}" id="checkInDate" 
+                                           th:classappend="${#fields.hasErrors('checkInDate')} ? 'is-invalid' : ''" required>
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('checkInDate')}" th:errors="*{checkInDate}"></div>
+                                </div>
+                                
+                                <div class="col-md-4 mb-3">
+                                    <label for="checkOutDate" class="form-label">Ngày check-out <span class="text-danger">*</span></label>
+                                    <input type="date" class="form-control" th:field="*{checkOutDate}" id="checkOutDate" 
+                                           th:classappend="${#fields.hasErrors('checkOutDate')} ? 'is-invalid' : ''" required>
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('checkOutDate')}" th:errors="*{checkOutDate}"></div>
+                                </div>
+                                
+                                <div class="col-md-4 mb-3">
+                                    <label for="numberOfGuests" class="form-label">Số khách <span class="text-danger">*</span></label>
+                                    <input type="number" class="form-control" th:field="*{numberOfGuests}" id="numberOfGuests" min="1" required>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="status" class="form-label">Trạng thái <span class="text-danger">*</span></label>
+                                <select class="form-select" th:field="*{status}" id="status" required>
+                                    <option th:each="status : ${bookingStatuses}" th:value="${status}" th:text="${status.displayName}"></option>
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="specialRequests" class="form-label">Yêu cầu đặc biệt</label>
+                                <textarea class="form-control" th:field="*{specialRequests}" id="specialRequests" rows="2"></textarea>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="notes" class="form-label">Ghi chú</label>
+                                <textarea class="form-control" th:field="*{notes}" id="notes" rows="2"></textarea>
+                            </div>
+                            
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                                <a href="/bookings" class="btn btn-secondary px-4">Hủy</a>
+                                <button type="submit" class="btn btn-primary px-4">
+                                    <i class="bi bi-save me-2"></i>Lưu
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

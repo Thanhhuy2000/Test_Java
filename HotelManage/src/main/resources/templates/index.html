@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: html(pageTitle='Dashboard', activePage='home', ~{:: #pageActions}, ~{:: #content})}">
+<head>
+    <title>Dashboard</title>
+</head>
+<body>
+    <div id="pageActions">
+        <span class="text-muted" th:text="${#temporals.format(#temporals.createNow(), 'dd/MM/yyyy HH:mm')}"></span>
+    </div>
+    
+    <div id="content">
+        <!-- Statistics Cards -->
+        <div class="row mb-4">
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card stat-card success">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col">
+                                <div class="text-xs font-weight-bold text-uppercase mb-1">Tổng số phòng</div>
+                                <div class="h3 mb-0 font-weight-bold" th:text="${totalRooms}">0</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="bi bi-door-open fs-2 text-success"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card stat-card info">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col">
+                                <div class="text-xs font-weight-bold text-uppercase mb-1">Phòng còn trống</div>
+                                <div class="h3 mb-0 font-weight-bold" th:text="${availableRooms}">0</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="bi bi-check-circle fs-2 text-info"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card stat-card warning">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col">
+                                <div class="text-xs font-weight-bold text-uppercase mb-1">Phòng đã thuê</div>
+                                <div class="h3 mb-0 font-weight-bold" th:text="${occupiedRooms}">0</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="bi bi-people-fill fs-2 text-warning"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card stat-card">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col">
+                                <div class="text-xs font-weight-bold text-uppercase mb-1">Doanh thu hôm nay</div>
+                                <div class="h3 mb-0 font-weight-bold">
+                                    <span th:text="${#numbers.formatDecimal(todayRevenue, 0, 'POINT', 0, 'COMMA')}">0</span> đ
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="bi bi-cash-stack fs-2 text-primary"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Today's Activities -->
+        <div class="row">
+            <!-- Check-ins Today -->
+            <div class="col-xl-4 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="bi bi-arrow-down-circle me-2"></i>Check-in hôm nay
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${todayCheckIns.empty}" class="text-center text-muted py-4">
+                            <i class="bi bi-inbox fs-1"></i>
+                            <p class="mb-0 mt-2">Không có check-in nào</p>
+                        </div>
+                        <div th:if="${!todayCheckIns.empty}" class="list-group list-group-flush">
+                            <div th:each="booking : ${todayCheckIns}" class="list-group-item">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-0" th:text="${booking.guest.fullName}">Guest Name</h6>
+                                        <small class="text-muted" th:text="'Phòng ' + ${booking.room.roomNumber}">Room 101</small>
+                                    </div>
+                                    <a th:href="@{/bookings/{id}(id=${booking.id})}" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-arrow-right"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Check-outs Today -->
+            <div class="col-xl-4 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="bi bi-arrow-up-circle me-2"></i>Check-out hôm nay
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${todayCheckOuts.empty}" class="text-center text-muted py-4">
+                            <i class="bi bi-inbox fs-1"></i>
+                            <p class="mb-0 mt-2">Không có check-out nào</p>
+                        </div>
+                        <div th:if="${!todayCheckOuts.empty}" class="list-group list-group-flush">
+                            <div th:each="booking : ${todayCheckOuts}" class="list-group-item">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-0" th:text="${booking.guest.fullName}">Guest Name</h6>
+                                        <small class="text-muted" th:text="'Phòng ' + ${booking.room.roomNumber}">Room 101</small>
+                                    </div>
+                                    <a th:href="@{/bookings/{id}(id=${booking.id})}" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-arrow-right"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Currently Occupied -->
+            <div class="col-xl-4 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="bi bi-house-fill me-2"></i>Đang ở
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${currentlyOccupied.empty}" class="text-center text-muted py-4">
+                            <i class="bi bi-inbox fs-1"></i>
+                            <p class="mb-0 mt-2">Không có khách đang ở</p>
+                        </div>
+                        <div th:if="${!currentlyOccupied.empty}" class="list-group list-group-flush">
+                            <div th:each="booking : ${#lists.size(currentlyOccupied) > 5 ? currentlyOccupied.subList(0, 5) : currentlyOccupied}" class="list-group-item">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-0" th:text="${booking.guest.fullName}">Guest Name</h6>
+                                        <small class="text-muted" th:text="'Phòng ' + ${booking.room.roomNumber}">Room 101</small>
+                                    </div>
+                                    <a th:href="@{/bookings/{id}(id=${booking.id})}" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-arrow-right"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div th:if="${#lists.size(currentlyOccupied) > 5}" class="text-center mt-3">
+                            <a href="/bookings" class="btn btn-sm btn-link">Xem tất cả</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

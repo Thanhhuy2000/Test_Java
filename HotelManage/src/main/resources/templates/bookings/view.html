@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: html(pageTitle='Chi tiết đặt phòng', activePage='bookings', ~{:: #pageActions}, ~{:: #content})}">
+<head>
+    <title>Chi tiết đặt phòng</title>
+</head>
+<body>
+    <div id="pageActions">
+        <a href="/bookings" class="btn btn-secondary me-2">
+            <i class="bi bi-arrow-left me-2"></i>Quay lại
+        </a>
+        <a th:href="@{/bookings/edit/{id}(id=${booking.id})}" class="btn btn-primary">
+            <i class="bi bi-pencil me-2"></i>Sửa
+        </a>
+    </div>
+    
+    <div id="content">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="bi bi-calendar-check me-2"></i>
+                            Booking <span th:text="${booking.bookingCode}">BK001</span>
+                        </h5>
+                        <span class="badge" 
+                              th:classappend="${booking.status == T(com.example.HotelManage.model.Booking.BookingStatus).CONFIRMED ? 'bg-info' :
+                                              booking.status == T(com.example.HotelManage.model.Booking.BookingStatus).CHECKED_IN ? 'bg-success' :
+                                              booking.status == T(com.example.HotelManage.model.Booking.BookingStatus).CHECKED_OUT ? 'bg-secondary' :
+                                              booking.status == T(com.example.HotelManage.model.Booking.BookingStatus).CANCELLED ? 'bg-danger' : 'bg-warning'}"
+                              th:text="${booking.status.displayName}">Chờ xác nhận</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <strong class="text-muted">Khách hàng:</strong>
+                            </div>
+                            <div class="col-md-8">
+                                <a th:href="@{/guests/{id}(id=${booking.guest.id})}" th:text="${booking.guest.fullName}">Guest Name</a>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <strong class="text-muted">Phòng:</strong>
+                            </div>
+                            <div class="col-md-8">
+                                <a th:href="@{/rooms/{id}(id=${booking.room.id})}" 
+                                   th:text="${booking.room.roomNumber + ' - ' + booking.room.roomType.displayName}">101 - Single</a>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <strong class="text-muted">Ngày check-in:</strong>
+                            </div>
+                            <div class="col-md-8" th:text="${#temporals.format(booking.checkInDate, 'dd/MM/yyyy')}">01/01/2024</div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <strong class="text-muted">Ngày check-out:</strong>
+                            </div>
+                            <div class="col-md-8" th:text="${#temporals.format(booking.checkOutDate, 'dd/MM/yyyy')}">02/01/2024</div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <strong class="text-muted">Số khách:</strong>
+                            </div>
+                            <div class="col-md-8" th:text="${booking.numberOfGuests}">2</div>
+                        </div>
+                        
+                        <hr class="my-4">
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <strong class="text-muted">Tổng tiền:</strong>
+                            </div>
+                            <div class="col-md-8">
+                                <strong th:text="${#numbers.formatDecimal(booking.totalAmount, 0, 'POINT', 0, 'COMMA') + ' VND'}">1000000 VND</strong>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <strong class="text-muted">Đã thanh toán:</strong>
+                            </div>
+                            <div class="col-md-8">
+                                <span th:text="${#numbers.formatDecimal(booking.paidAmount, 0, 'POINT', 0, 'COMMA') + ' VND'}">500000 VND</span>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <strong class="text-muted">Còn lại:</strong>
+                            </div>
+                            <div class="col-md-8">
+                                <span th:classappend="${booking.remainingAmount > 0 ? 'text-danger fw-bold' : 'text-success'}"
+                                      th:text="${#numbers.formatDecimal(booking.remainingAmount, 0, 'POINT', 0, 'COMMA') + ' VND'}">500000 VND</span>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3" th:if="${booking.specialRequests}">
+                            <div class="col-md-4">
+                                <strong class="text-muted">Yêu cầu đặc biệt:</strong>
+                            </div>
+                            <div class="col-md-8" th:text="${booking.specialRequests}">Special requests</div>
+                        </div>
+                        
+                        <div class="row mb-3" th:if="${booking.notes}">
+                            <div class="col-md-4">
+                                <strong class="text-muted">Ghi chú:</strong>
+                            </div>
+                            <div class="col-md-8" th:text="${booking.notes}">Notes</div>
+                        </div>
+                        
+                        <hr class="my-4">
+                        
+                        <div class="d-flex flex-wrap gap-2">
+                            <a th:if="${booking.status == T(com.example.HotelManage.model.Booking.BookingStatus).PENDING}"
+                               th:href="@{/bookings/{id}/confirm(id=${booking.id})}" 
+                               class="btn btn-primary btn-sm">
+                                <i class="bi bi-check-circle me-1"></i>Xác nhận
+                            </a>
+                            
+                            <a th:if="${booking.status == T(com.example.HotelManage.model.Booking.BookingStatus).CONFIRMED}"
+                               th:href="@{/bookings/{id}/checkin(id=${booking.id})}" 
+                               class="btn btn-success btn-sm">
+                                <i class="bi bi-box-arrow-in-right me-1"></i>Check-in
+                            </a>
+                            
+                            <a th:if="${booking.status == T(com.example.HotelManage.model.Booking.BookingStatus).CHECKED_IN}"
+                               th:href="@{/bookings/{id}/checkout(id=${booking.id})}" 
+                               class="btn btn-warning btn-sm">
+                                <i class="bi bi-box-arrow-right me-1"></i>Check-out
+                            </a>
+                            
+                            <a th:if="${booking.status != T(com.example.HotelManage.model.Booking.BookingStatus).CANCELLED && 
+                                       booking.status != T(com.example.HotelManage.model.Booking.BookingStatus).CHECKED_OUT}"
+                               th:href="@{/bookings/{id}/cancel(id=${booking.id}, reason='Hủy bởi quản lý')}" 
+                               class="btn btn-danger btn-sm"
+                               onclick="return confirm('Bạn có chắc muốn hủy booking này?')">
+                                <i class="bi bi-x-circle me-1"></i>Hủy booking
+                            </a>
+                            
+                            <a th:href="@{/payments/new(bookingId=${booking.id})}" class="btn btn-secondary btn-sm">
+                                <i class="bi bi-credit-card me-1"></i>Thanh toán
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

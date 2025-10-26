@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: html(pageTitle='Quản lý khách hàng', activePage='guests', ~{:: #pageActions}, ~{:: #content})}">
+<head>
+    <title>Quản lý khách hàng</title>
+</head>
+<body>
+    <div id="pageActions">
+        <div class="d-flex align-items-center gap-2">
+            <form method="get" action="/guests" class="d-flex gap-2" th:if="${keyword == null || keyword.isEmpty()}">
+                <input type="text" name="keyword" class="form-control" placeholder="Tìm kiếm khách hàng..." style="width: 250px;">
+                <button type="submit" class="btn btn-secondary">
+                    <i class="bi bi-search"></i>
+                </button>
+            </form>
+            <a th:if="${keyword != null && !keyword.isEmpty()}" href="/guests" class="btn btn-secondary">
+                <i class="bi bi-x-circle me-2"></i>Xóa bộ lọc
+            </a>
+            <a href="/guests/new" class="btn btn-primary">
+                <i class="bi bi-plus-circle me-2"></i>Thêm khách hàng
+            </a>
+        </div>
+    </div>
+    
+    <div id="content">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-people me-2"></i>Danh sách khách hàng
+                <span th:if="${keyword != null && !keyword.isEmpty()}" class="text-muted ms-2">
+                    (Tìm kiếm: "<span th:text="${keyword}"></span>")
+                </span>
+            </div>
+            <div class="card-body">
+                <div th:if="${guests.empty}" class="text-center text-muted py-5">
+                    <i class="bi bi-inbox fs-1"></i>
+                    <p class="mb-0 mt-3">Chưa có khách hàng nào. Hãy thêm khách hàng mới!</p>
+                </div>
+                
+                <div th:if="${!guests.empty}" class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th>Họ tên</th>
+                                <th>Email</th>
+                                <th>Điện thoại</th>
+                                <th>CMND/CCCD</th>
+                                <th>Giới tính</th>
+                                <th>Quốc tịch</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="guest : ${guests}">
+                                <td>
+                                    <strong th:text="${guest.fullName}">Nguyễn Văn A</strong>
+                                </td>
+                                <td th:text="${guest.email}">email@example.com</td>
+                                <td th:text="${guest.phone}">0123456789</td>
+                                <td th:text="${guest.identityCard}">001234567890</td>
+                                <td>
+                                    <span th:if="${guest.gender != null}" th:text="${guest.gender.displayName}">Nam</span>
+                                    <span th:if="${guest.gender == null}" class="text-muted">-</span>
+                                </td>
+                                <td th:text="${guest.nationality}">Việt Nam</td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a th:href="@{/guests/{id}(id=${guest.id})}" class="btn btn-sm btn-outline-secondary" title="Xem chi tiết">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <a th:href="@{/guests/edit/{id}(id=${guest.id})}" class="btn btn-sm btn-outline-secondary" title="Sửa">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <a th:href="@{/guests/delete/{id}(id=${guest.id})}" 
+                                           class="btn btn-sm btn-outline-danger" 
+                                           title="Xóa"
+                                           onclick="return confirm('Bạn có chắc muốn xóa khách hàng này?')">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

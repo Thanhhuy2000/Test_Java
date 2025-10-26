@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: html(pageTitle='Quản lý đặt phòng', activePage='bookings', ~{:: #pageActions}, ~{:: #content})}">
+<head>
+    <title>Quản lý đặt phòng</title>
+</head>
+<body>
+    <div id="pageActions">
+        <a href="/bookings/new" class="btn btn-primary">
+            <i class="bi bi-plus-circle me-2"></i>Đặt phòng mới
+        </a>
+    </div>
+    
+    <div id="content">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-calendar-check me-2"></i>Danh sách đặt phòng
+            </div>
+            <div class="card-body">
+                <div th:if="${bookings.empty}" class="text-center text-muted py-5">
+                    <i class="bi bi-inbox fs-1"></i>
+                    <p class="mb-0 mt-3">Chưa có đặt phòng nào. Hãy tạo đặt phòng mới!</p>
+                </div>
+                
+                <div th:if="${!bookings.empty}" class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th>Mã booking</th>
+                                <th>Khách hàng</th>
+                                <th>Phòng</th>
+                                <th>Check-in</th>
+                                <th>Check-out</th>
+                                <th>Tổng tiền</th>
+                                <th>Đã trả</th>
+                                <th>Trạng thái</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="booking : ${bookings}">
+                                <td>
+                                    <strong th:text="${booking.bookingCode}">BK001</strong>
+                                </td>
+                                <td th:text="${booking.guest.fullName}">Nguyễn Văn A</td>
+                                <td th:text="${booking.room.roomNumber}">101</td>
+                                <td th:text="${#temporals.format(booking.checkInDate, 'dd/MM/yyyy')}">01/01/2024</td>
+                                <td th:text="${#temporals.format(booking.checkOutDate, 'dd/MM/yyyy')}">02/01/2024</td>
+                                <td>
+                                    <span th:text="${#numbers.formatDecimal(booking.totalAmount, 0, 'POINT', 0, 'COMMA')}">1000000</span> đ
+                                </td>
+                                <td>
+                                    <span th:text="${#numbers.formatDecimal(booking.paidAmount, 0, 'POINT', 0, 'COMMA')}">500000</span> đ
+                                </td>
+                                <td>
+                                    <span class="badge" 
+                                          th:classappend="${booking.status == T(com.example.HotelManage.model.Booking.BookingStatus).CONFIRMED ? 'bg-info' :
+                                                          booking.status == T(com.example.HotelManage.model.Booking.BookingStatus).CHECKED_IN ? 'bg-success' :
+                                                          booking.status == T(com.example.HotelManage.model.Booking.BookingStatus).CHECKED_OUT ? 'bg-secondary' :
+                                                          booking.status == T(com.example.HotelManage.model.Booking.BookingStatus).CANCELLED ? 'bg-danger' : 'bg-warning'}"
+                                          th:text="${booking.status.displayName}">Chờ xác nhận</span>
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a th:href="@{/bookings/{id}(id=${booking.id})}" class="btn btn-sm btn-outline-secondary" title="Xem chi tiết">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <a th:href="@{/bookings/edit/{id}(id=${booking.id})}" class="btn btn-sm btn-outline-secondary" title="Sửa">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <a th:href="@{/bookings/delete/{id}(id=${booking.id})}" 
+                                           class="btn btn-sm btn-outline-danger" 
+                                           title="Xóa"
+                                           onclick="return confirm('Bạn có chắc muốn xóa booking này?')">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

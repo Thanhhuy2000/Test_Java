@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: html(pageTitle='Chi tiết phòng', activePage='rooms', ~{:: #pageActions}, ~{:: #content})}">
+<head>
+    <title>Chi tiết phòng</title>
+</head>
+<body>
+    <div id="pageActions">
+        <a href="/rooms" class="btn btn-secondary me-2">
+            <i class="bi bi-arrow-left me-2"></i>Quay lại
+        </a>
+        <a th:href="@{/rooms/edit/{id}(id=${room.id})}" class="btn btn-primary">
+            <i class="bi bi-pencil me-2"></i>Sửa
+        </a>
+    </div>
+    
+    <div id="content">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="bi bi-door-open me-2"></i>
+                            Phòng <span th:text="${room.roomNumber}">101</span>
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <strong>Loại phòng:</strong>
+                            </div>
+                            <div class="col-md-8" th:text="${room.roomType.displayName}">Single</div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <strong>Giá/đêm:</strong>
+                            </div>
+                            <div class="col-md-8">
+                                <span th:text="${#numbers.formatDecimal(room.pricePerNight, 0, 'POINT', 0, 'COMMA')}">500000</span> VND
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <strong>Trạng thái:</strong>
+                            </div>
+                            <div class="col-md-8">
+                                <span class="badge" 
+                                      th:classappend="${room.status == T(com.example.HotelManage.model.Room.RoomStatus).AVAILABLE ? 'bg-success' :
+                                                      room.status == T(com.example.HotelManage.model.Room.RoomStatus).OCCUPIED ? 'bg-warning' :
+                                                      room.status == T(com.example.HotelManage.model.Room.RoomStatus).RESERVED ? 'bg-info' :
+                                                      room.status == T(com.example.HotelManage.model.Room.RoomStatus).MAINTENANCE ? 'bg-danger' : 'bg-secondary'}"
+                                      th:text="${room.status.displayName}">Còn trống</span>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <strong>Sức chứa:</strong>
+                            </div>
+                            <div class="col-md-8">
+                                <span th:text="${room.maxOccupancy}">2</span> người
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <strong>Tầng:</strong>
+                            </div>
+                            <div class="col-md-8" th:text="${room.floor}">1</div>
+                        </div>
+                        
+                        <div class="row mb-3" th:if="${room.amenities}">
+                            <div class="col-md-4">
+                                <strong>Tiện nghi:</strong>
+                            </div>
+                            <div class="col-md-8">
+                                <span th:each="amenity, iterStat : ${#strings.arraySplit(room.amenities, ',')}" 
+                                      class="badge bg-info me-1" th:text="${#strings.trim(amenity)}">WiFi</span>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3" th:if="${room.description}">
+                            <div class="col-md-4">
+                                <strong>Mô tả:</strong>
+                            </div>
+                            <div class="col-md-8" th:text="${room.description}">Description</div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <strong>Ngày tạo:</strong>
+                            </div>
+                            <div class="col-md-8" th:text="${#temporals.format(room.createdAt, 'dd/MM/yyyy HH:mm')}">01/01/2024</div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <strong>Cập nhật lần cuối:</strong>
+                            </div>
+                            <div class="col-md-8" th:text="${#temporals.format(room.updatedAt, 'dd/MM/yyyy HH:mm')}">01/01/2024</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

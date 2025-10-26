@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: html(pageTitle='Chi tiết khách hàng', activePage='guests', ~{:: #pageActions}, ~{:: #content})}">
+<head>
+    <title>Chi tiết khách hàng</title>
+</head>
+<body>
+    <div id="pageActions">
+        <a href="/guests" class="btn btn-secondary me-2">
+            <i class="bi bi-arrow-left me-2"></i>Quay lại
+        </a>
+        <a th:href="@{/guests/edit/{id}(id=${guest.id})}" class="btn btn-primary">
+            <i class="bi bi-pencil me-2"></i>Sửa
+        </a>
+    </div>
+    
+    <div id="content">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="bi bi-person me-2"></i>
+                            <span th:text="${guest.fullName}">Nguyễn Văn A</span>
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <strong class="text-muted">CMND/CCCD:</strong>
+                            </div>
+                            <div class="col-md-8" th:text="${guest.identityCard}">001234567890</div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <strong class="text-muted">Điện thoại:</strong>
+                            </div>
+                            <div class="col-md-8" th:text="${guest.phone}">0123456789</div>
+                        </div>
+                        
+                        <div class="row mb-3" th:if="${guest.email}">
+                            <div class="col-md-4">
+                                <strong class="text-muted">Email:</strong>
+                            </div>
+                            <div class="col-md-8" th:text="${guest.email}">email@example.com</div>
+                        </div>
+                        
+                        <div class="row mb-3" th:if="${guest.dateOfBirth}">
+                            <div class="col-md-4">
+                                <strong class="text-muted">Ngày sinh:</strong>
+                            </div>
+                            <div class="col-md-8" th:text="${#temporals.format(guest.dateOfBirth, 'dd/MM/yyyy')}">01/01/1990</div>
+                        </div>
+                        
+                        <div class="row mb-3" th:if="${guest.gender}">
+                            <div class="col-md-4">
+                                <strong class="text-muted">Giới tính:</strong>
+                            </div>
+                            <div class="col-md-8" th:text="${guest.gender.displayName}">Nam</div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <strong class="text-muted">Quốc tịch:</strong>
+                            </div>
+                            <div class="col-md-8" th:text="${guest.nationality}">Việt Nam</div>
+                        </div>
+                        
+                        <div class="row mb-3" th:if="${guest.address}">
+                            <div class="col-md-4">
+                                <strong class="text-muted">Địa chỉ:</strong>
+                            </div>
+                            <div class="col-md-8" th:text="${guest.address}">Address</div>
+                        </div>
+                        
+                        <div class="row mb-3" th:if="${guest.notes}">
+                            <div class="col-md-4">
+                                <strong class="text-muted">Ghi chú:</strong>
+                            </div>
+                            <div class="col-md-8" th:text="${guest.notes}">Notes</div>
+                        </div>
+                        
+                        <hr class="my-4">
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <strong class="text-muted">Ngày tạo:</strong>
+                            </div>
+                            <div class="col-md-8" th:text="${#temporals.format(guest.createdAt, 'dd/MM/yyyy HH:mm')}">01/01/2024</div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <strong class="text-muted">Cập nhật lần cuối:</strong>
+                            </div>
+                            <div class="col-md-8" th:text="${#temporals.format(guest.updatedAt, 'dd/MM/yyyy HH:mm')}">01/01/2024</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

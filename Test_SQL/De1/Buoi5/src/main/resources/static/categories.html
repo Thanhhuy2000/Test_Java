@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Category Management</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        body { font-family: 'Roboto', Arial, sans-serif; margin: 0; background: linear-gradient(120deg, #ede9fe 0%, #a78bfa 100%); color: #222; min-height: 100vh; }
+        .container { max-width: 700px; margin: 40px auto 0 auto; padding: 0 16px; }
+        h1 { color: #6d28d9; margin-bottom: 24px; }
+        .form-section { background: #fff; padding: 24px 28px 20px 28px; border-radius: 18px; box-shadow: 0 4px 24px #a78bfa33; display: flex; flex-wrap: wrap; gap: 14px; align-items: center; margin-bottom: 28px; }
+        .form-section input { flex: 1 1 180px; padding: 12px; border-radius: 8px; border: 1.5px solid #a78bfa; font-size: 1rem; margin: 0 8px 0 0; background: #f8fafc; }
+        .form-section button { padding: 12px 26px; border-radius: 8px; border: none; background: #6d28d9; color: #fff; font-weight: 700; font-size: 1rem; cursor: pointer; margin: 0 8px 0 0; transition: background 0.2s; }
+        .form-section button[type="button"] { background: #ede9fe; color: #6d28d9; }
+        .form-section button[type="button"]:hover { background: #6d28d9; color: #fff; }
+        table { border-collapse: collapse; width: 100%; background: #fff; box-shadow: 0 2px 8px #a78bfa44; border-radius: 18px; overflow: hidden; }
+        th, td { border: none; padding: 14px 12px; text-align: left; }
+        th { background: #a78bfa; color: #fff; font-weight: 700; cursor: pointer; user-select: none; }
+        tr:nth-child(even) { background: #f3f0ff; }
+        tr:hover { background: #e0e7ff; transition: background 0.2s; }
+        .action-btn { margin-right: 4px; background: none; border: none; color: #6d28d9; font-size: 1.1rem; cursor: pointer; padding: 6px 10px; border-radius: 4px; transition: background 0.2s, color 0.2s; }
+        .action-btn:hover { background: #fbbf24; color: #6d28d9; }
+        .footer { text-align: center; color: #fff; margin: 60px 0 20px 0; font-size: 1rem; letter-spacing: 1px; }
+        @media (max-width: 700px) {
+            .container { max-width: 98vw; }
+            .form-section { flex-direction: column; gap: 10px; padding: 14px 6px; }
+            table, th, td { font-size: 0.98rem; }
+        }
+    </style>
+</head>
+<body>
+    <div id="navbar"></div>
+    <div class="container">
+        <h1>Category Management</h1>
+        <form id="categoryForm" class="form-section">
+            <input type="hidden" id="categoryId">
+            <input type="text" id="categoryName" placeholder="Category Name" required>
+            <button type="submit"><i class="fa-solid fa-floppy-disk"></i> Save</button>
+            <button type="button" onclick="resetForm()"><i class="fa-solid fa-eraser"></i> Clear</button>
+        </form>
+        <table id="categoriesTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Book Count</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+    <div class="footer">&copy; 2024 Book Management App &mdash; Powered by Spring Boot &amp; Modern UI</div>
+    <script>
+    // Load navbar
+    fetch('navbar.html').then(r=>r.text()).then(html=>{document.getElementById('navbar').innerHTML=html;});
+    const apiUrl = '/api/categories';
+    const tableBody = document.querySelector('#categoriesTable tbody');
+    const form = document.getElementById('categoryForm');
+    const categoryId = document.getElementById('categoryId');
+    const categoryName = document.getElementById('categoryName');
+    let categories = [];
+
+    function fetchCategories() {
+        fetch(apiUrl)
+            .then(res => res.json())
+            .then(data => {
+                categories = data;
+                renderCategories();
+            });
+    }
+
+    function renderCategories() {
+        tableBody.innerHTML = '';
+        categories.forEach(cat => {
+            tableBody.innerHTML += `<tr>
+                <td>${cat.id}</td>
+                <td>${cat.name}</td>
+                <td>${cat.bookCount || 0}</td>
+                <td>
+                    <button class='action-btn' title='Edit' onclick='editCategory(${JSON.stringify(cat)})'><i class="fa-solid fa-pen-to-square"></i></button>
+                    <button class='action-btn' title='Delete' onclick='deleteCategory(${cat.id})'><i class="fa-solid fa-trash"></i></button>
+                </td>
+            </tr>`;
+        });
+    }
+
+    function editCategory(cat) {
+        categoryId.value = cat.id;
+        categoryName.value = cat.name;
+    }
+    window.editCategory = editCategory;
+    window.deleteCategory = deleteCategory;
+
+    function resetForm() {
+        categoryId.value = '';
+        categoryName.value = '';
+    }
+
+    function deleteCategory(id) {
+        if (confirm('Delete this category?')) {
+            fetch(`${apiUrl}/${id}`, { method: 'DELETE' })
+                .then(fetchCategories);
+        }
+    }
+
+    form.onsubmit = function(e) {
+        e.preventDefault();
+        const cat = { name: categoryName.value };
+        if (categoryId.value) {
+            fetch(`${apiUrl}/${categoryId.value}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(cat)
+            }).then(() => {
+                fetchCategories();
+                resetForm();
+            });
+        } else {
+            fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(cat)
+            }).then(() => {
+                fetchCategories();
+                resetForm();
+            });
+        }
+    };
+
+    fetchCategories();
+    </script>
+</body>
+</html>

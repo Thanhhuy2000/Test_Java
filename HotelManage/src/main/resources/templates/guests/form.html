@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: html(pageTitle=${guest.id != null ? 'Sửa khách hàng' : 'Thêm khách hàng'}, activePage='guests', ~{:: #pageActions}, ~{:: #content})}">
+<head>
+    <title>Form khách hàng</title>
+</head>
+<body>
+    <div id="pageActions">
+        <a href="/guests" class="btn btn-secondary">
+            <i class="bi bi-arrow-left me-2"></i>Quay lại
+        </a>
+    </div>
+    
+    <div id="content">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="bi bi-person-plus me-2"></i>
+                        <span th:text="${guest.id != null ? 'Sửa thông tin khách hàng' : 'Thêm khách hàng mới'}">Form khách hàng</span>
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{/guests/save}" th:object="${guest}" method="post">
+                            <input type="hidden" th:field="*{id}">
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="fullName" class="form-label">Họ và tên <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" th:field="*{fullName}" id="fullName" 
+                                           th:classappend="${#fields.hasErrors('fullName')} ? 'is-invalid' : ''" required>
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"></div>
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label for="identityCard" class="form-label">Số CMND/CCCD <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" th:field="*{identityCard}" id="identityCard" 
+                                           th:classappend="${#fields.hasErrors('identityCard')} ? 'is-invalid' : ''" required>
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('identityCard')}" th:errors="*{identityCard}"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="phone" class="form-label">Số điện thoại <span class="text-danger">*</span></label>
+                                    <input type="tel" class="form-control" th:field="*{phone}" id="phone" 
+                                           th:classappend="${#fields.hasErrors('phone')} ? 'is-invalid' : ''" required>
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></div>
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label for="email" class="form-label">Email</label>
+                                    <input type="email" class="form-control" th:field="*{email}" id="email" 
+                                           th:classappend="${#fields.hasErrors('email')} ? 'is-invalid' : ''">
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label for="dateOfBirth" class="form-label">Ngày sinh</label>
+                                    <input type="date" class="form-control" th:field="*{dateOfBirth}" id="dateOfBirth">
+                                </div>
+                                
+                                <div class="col-md-4 mb-3">
+                                    <label for="gender" class="form-label">Giới tính</label>
+                                    <select class="form-select" th:field="*{gender}" id="gender">
+                                        <option value="">-- Chọn giới tính --</option>
+                                        <option th:each="gender : ${genders}" th:value="${gender}" th:text="${gender.displayName}"></option>
+                                    </select>
+                                </div>
+                                
+                                <div class="col-md-4 mb-3">
+                                    <label for="nationality" class="form-label">Quốc tịch</label>
+                                    <input type="text" class="form-control" th:field="*{nationality}" id="nationality" value="Việt Nam">
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="address" class="form-label">Địa chỉ</label>
+                                <input type="text" class="form-control" th:field="*{address}" id="address">
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="notes" class="form-label">Ghi chú</label>
+                                <textarea class="form-control" th:field="*{notes}" id="notes" rows="3"></textarea>
+                            </div>
+                            
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                                <a href="/guests" class="btn btn-secondary px-4">Hủy</a>
+                                <button type="submit" class="btn btn-primary px-4">
+                                    <i class="bi bi-save me-2"></i>Lưu
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Bookstore Management System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            margin: 0;
+            background: linear-gradient(120deg, #a78bfa 0%, #6366f1 100%);
+            color: #222;
+            min-height: 100vh;
+        }
+        .navbar {
+            background: #6d28d9;
+            padding: 22px 0;
+            box-shadow: 0 2px 8px #0001;
+            text-align: center;
+        }
+        .navbar a {
+            color: #fff;
+            font-weight: 700;
+            font-size: 1.2rem;
+            text-decoration: none;
+            margin: 0 28px;
+            letter-spacing: 1px;
+            transition: color 0.2s;
+        }
+        .navbar a:hover {
+            color: #fbbf24;
+        }
+        .hero {
+            max-width: 700px;
+            margin: 60px auto 40px auto;
+            background: #fff;
+            border-radius: 24px;
+            box-shadow: 0 8px 32px #0002;
+            padding: 48px 36px 36px 36px;
+            text-align: center;
+        }
+        .hero h1 {
+            color: #6d28d9;
+            font-size: 2.8rem;
+            margin-bottom: 18px;
+            font-weight: 700;
+        }
+        .hero p {
+            color: #555;
+            font-size: 1.2rem;
+            margin-bottom: 32px;
+        }
+        .nav-cards {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 32px;
+            justify-content: center;
+            margin-top: 24px;
+        }
+        .nav-card {
+            background: linear-gradient(120deg, #a78bfa 0%, #6366f1 100%);
+            color: #fff;
+            border-radius: 18px;
+            box-shadow: 0 4px 16px #0002;
+            width: 220px;
+            height: 180px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            font-size: 1.2rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            transition: transform 0.18s, box-shadow 0.18s;
+        }
+        .nav-card:hover {
+            transform: translateY(-8px) scale(1.04);
+            box-shadow: 0 8px 32px #6d28d9cc;
+        }
+        .nav-card i {
+            font-size: 2.8rem;
+            margin-bottom: 18px;
+        }
+        .footer {
+            text-align: center;
+            color: #fff;
+            margin: 60px 0 20px 0;
+            font-size: 1rem;
+            letter-spacing: 1px;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <a href="books.html">Books</a>
+        <a href="orders.html">Orders</a>
+        <a href="customers.html">Customers</a>
+        <a href="categories.html">Categories</a>
+    </div>
+    <div class="hero">
+        <h1><i class="fa-solid fa-book-open"></i> Bookstore Management System</h1>
+        <p>Welcome to your modern, web-based bookstore management platform.<br>
+        Effortlessly manage books, orders, customers, and categories with a beautiful, intuitive interface.</p>
+        <div class="nav-cards">
+            <a class="nav-card" href="books.html"><i class="fa-solid fa-book"></i>Book Management</a>
+            <a class="nav-card" href="orders.html"><i class="fa-solid fa-receipt"></i>Order Management</a>
+            <a class="nav-card" href="customers.html"><i class="fa-solid fa-users"></i>Customer Management</a>
+            <a class="nav-card" href="categories.html"><i class="fa-solid fa-tags"></i>Category Management</a>
+        </div>
+    </div>
+    <div class="footer">&copy; 2024 Bookstore Management &mdash; Powered by Spring Boot &amp; Modern UI</div>
+</body>
+</html>

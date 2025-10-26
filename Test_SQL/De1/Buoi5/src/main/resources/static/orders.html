@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Order Management</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        body { font-family: 'Roboto', Arial, sans-serif; margin: 0; background: linear-gradient(120deg, #ede9fe 0%, #a78bfa 100%); color: #222; min-height: 100vh; }
+        .container { max-width: 1100px; margin: 40px auto 0 auto; padding: 0 16px; }
+        h1 { color: #6d28d9; margin-bottom: 24px; }
+        table { border-collapse: collapse; width: 100%; background: #fff; box-shadow: 0 2px 8px #a78bfa44; border-radius: 18px; overflow: hidden; }
+        th, td { border: none; padding: 14px 12px; text-align: left; }
+        th { background: #a78bfa; color: #fff; font-weight: 700; cursor: pointer; user-select: none; }
+        tr:nth-child(even) { background: #f3f0ff; }
+        tr:hover { background: #e0e7ff; transition: background 0.2s; }
+        .action-btn { margin-right: 4px; background: none; border: none; color: #6d28d9; font-size: 1.1rem; cursor: pointer; padding: 6px 10px; border-radius: 4px; transition: background 0.2s, color 0.2s; }
+        .action-btn:hover { background: #fbbf24; color: #6d28d9; }
+        .footer { text-align: center; color: #fff; margin: 60px 0 20px 0; font-size: 1rem; letter-spacing: 1px; }
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.4); align-items: center; justify-content: center; }
+        .modal-content { background: #fff; padding: 32px 40px; border-radius: 18px; min-width: 320px; box-shadow: 0 8px 32px #a78bfa33; position: relative; animation: popIn 0.3s; }
+        .close { position: absolute; right: 20px; top: 16px; font-size: 26px; color: #888; cursor: pointer; }
+        .close:hover { color: #6d28d9; }
+        @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        @media (max-width: 900px) {
+            .container { max-width: 98vw; }
+            table, th, td { font-size: 0.98rem; }
+            .modal-content { min-width: 90vw; padding: 18px 6px; }
+        }
+    </style>
+</head>
+<body>
+    <div id="navbar"></div>
+    <div class="container">
+        <h1>Order Management</h1>
+        <table id="ordersTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Customer</th>
+                    <th>Date</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+    <div id="orderModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2 style="color:#6366f1;">Order Details</h2>
+            <div id="modalDetails"></div>
+        </div>
+    </div>
+    <div class="footer">&copy; 2024 Book Management App &mdash; Powered by Spring Boot &amp; Modern UI</div>
+    <script>
+    // Load navbar
+    fetch('navbar.html').then(r=>r.text()).then(html=>{document.getElementById('navbar').innerHTML=html;});
+    const apiUrl = '/api/orders';
+    const tableBody = document.querySelector('#ordersTable tbody');
+    const orderModal = document.getElementById('orderModal');
+    const modalDetails = document.getElementById('modalDetails');
+    let orders = [];
+
+    function fetchOrders() {
+        fetch(apiUrl)
+            .then(res => res.json())
+            .then(data => {
+                orders = data;
+                renderOrders();
+            });
+    }
+
+    function renderOrders() {
+        tableBody.innerHTML = '';
+        orders.forEach(order => {
+            tableBody.innerHTML += `<tr>
+                <td>${order.id}</td>
+                <td>${order.customer ? order.customer.name : ''}</td>
+                <td>${order.orderDate ? order.orderDate.replace('T',' ').substring(0,16) : ''}</td>
+                <td>${order.total}</td>
+                <td>${order.status}</td>
+                <td><button class='action-btn' title='View' onclick='viewOrder(${order.id})'><i class="fa-solid fa-eye"></i></button></td>
+            </tr>`;
+        });
+    }
+
+    function viewOrder(id) {
+        fetch(`${apiUrl}/${id}`)
+            .then(res => res.json())
+            .then(order => {
+                let html = `<p><b>Order ID:</b> ${order.id}</p>
+                    <p><b>Customer:</b> ${order.customer ? order.customer.name : ''}</p>
+                    <p><b>Date:</b> ${order.orderDate ? order.orderDate.replace('T',' ').substring(0,16) : ''}</p>
+                    <p><b>Total:</b> ${order.total}</p>
+                    <p><b>Status:</b> ${order.status}</p>`;
+                if (order.items && order.items.length) {
+                    html += `<h3>Items</h3><table style='width:100%;margin-bottom:12px;'><thead><tr><th>Book</th><th>Quantity</th><th>Price</th></tr></thead><tbody>`;
+                    order.items.forEach(item => {
+                        html += `<tr><td>${item.book ? item.book.title : ''}</td><td>${item.quantity}</td><td>${item.price}</td></tr>`;
+                    });
+                    html += '</tbody></table>';
+                }
+                modalDetails.innerHTML = html;
+                orderModal.style.display = 'flex';
+            });
+    }
+    window.viewOrder = viewOrder;
+    function closeModal() { orderModal.style.display = 'none'; }
+    window.closeModal = closeModal;
+    window.onclick = function(event) { if (event.target === orderModal) closeModal(); };
+    fetchOrders();
+    </script>
+</body>
+</html>

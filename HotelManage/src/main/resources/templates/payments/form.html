@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: html(pageTitle='Tạo thanh toán', activePage='payments', ~{:: #pageActions}, ~{:: #content})}">
+<head>
+    <title>Form thanh toán</title>
+</head>
+<body>
+    <div id="pageActions">
+        <a href="/payments" class="btn btn-secondary">
+            <i class="bi bi-arrow-left me-2"></i>Quay lại
+        </a>
+    </div>
+    
+    <div id="content">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="bi bi-credit-card-2-front me-2"></i>Tạo thanh toán mới
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{/payments/save}" th:object="${payment}" method="post">
+                            <div class="mb-3">
+                                <label for="bookingId" class="form-label">Booking <span class="text-danger">*</span></label>
+                                <select class="form-select" id="bookingId" name="bookingId" required>
+                                    <option value="">-- Chọn booking --</option>
+                                    <option th:each="booking : ${bookings}" 
+                                            th:value="${booking.id}" 
+                                            th:text="${booking.bookingCode + ' - ' + booking.guest.fullName + ' (Còn lại: ' + #numbers.formatDecimal(booking.remainingAmount, 0, 'POINT', 0, 'COMMA') + ' VND)'}"
+                                            th:selected="${payment.booking != null && payment.booking.id == booking.id}"></option>
+                                </select>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="amount" class="form-label">Số tiền (VND) <span class="text-danger">*</span></label>
+                                    <input type="number" class="form-control" th:field="*{amount}" id="amount" 
+                                           th:classappend="${#fields.hasErrors('amount')} ? 'is-invalid' : ''" required min="0" step="1000">
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('amount')}" th:errors="*{amount}"></div>
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label for="paymentMethod" class="form-label">Phương thức thanh toán <span class="text-danger">*</span></label>
+                                    <select class="form-select" th:field="*{paymentMethod}" id="paymentMethod" required>
+                                        <option value="">-- Chọn phương thức --</option>
+                                        <option th:each="method : ${paymentMethods}" th:value="${method}" th:text="${method.displayName}"></option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="paymentDate" class="form-label">Ngày thanh toán <span class="text-danger">*</span></label>
+                                    <input type="datetime-local" class="form-control" th:field="*{paymentDate}" id="paymentDate" required>
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label for="status" class="form-label">Trạng thái <span class="text-danger">*</span></label>
+                                    <select class="form-select" th:field="*{status}" id="status" required>
+                                        <option th:each="status : ${paymentStatuses}" th:value="${status}" th:text="${status.displayName}"></option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="transactionId" class="form-label">Mã giao dịch</label>
+                                <input type="text" class="form-control" th:field="*{transactionId}" id="transactionId">
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="notes" class="form-label">Ghi chú</label>
+                                <textarea class="form-control" th:field="*{notes}" id="notes" rows="3"></textarea>
+                            </div>
+                            
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                                <a href="/payments" class="btn btn-secondary px-4">Hủy</a>
+                                <button type="submit" class="btn btn-primary px-4">
+                                    <i class="bi bi-save me-2"></i>Lưu
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

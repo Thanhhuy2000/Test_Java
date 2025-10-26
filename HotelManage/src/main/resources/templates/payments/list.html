@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: html(pageTitle='Quản lý thanh toán', activePage='payments', ~{:: #pageActions}, ~{:: #content})}">
+<head>
+    <title>Quản lý thanh toán</title>
+</head>
+<body>
+    <div id="pageActions">
+        <a href="/payments/new" class="btn btn-primary">
+            <i class="bi bi-plus-circle me-2"></i>Tạo thanh toán
+        </a>
+    </div>
+    
+    <div id="content">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-credit-card me-2"></i>Danh sách thanh toán
+            </div>
+            <div class="card-body">
+                <div th:if="${payments.empty}" class="text-center text-muted py-5">
+                    <i class="bi bi-inbox fs-1"></i>
+                    <p class="mb-0 mt-3">Chưa có thanh toán nào</p>
+                </div>
+                
+                <div th:if="${!payments.empty}" class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th>Mã thanh toán</th>
+                                <th>Mã booking</th>
+                                <th>Khách hàng</th>
+                                <th>Số tiền</th>
+                                <th>Phương thức</th>
+                                <th>Ngày thanh toán</th>
+                                <th>Trạng thái</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="payment : ${payments}">
+                                <td>
+                                    <strong th:text="${payment.paymentCode}">PAY001</strong>
+                                </td>
+                                <td>
+                                    <a th:href="@{/bookings/{id}(id=${payment.booking.id})}" th:text="${payment.booking.bookingCode}">BK001</a>
+                                </td>
+                                <td th:text="${payment.booking.guest.fullName}">Nguyễn Văn A</td>
+                                <td>
+                                    <span th:text="${#numbers.formatDecimal(payment.amount, 0, 'POINT', 0, 'COMMA')}">1000000</span> đ
+                                </td>
+                                <td th:text="${payment.paymentMethod.displayName}">Tiền mặt</td>
+                                <td th:text="${#temporals.format(payment.paymentDate, 'dd/MM/yyyy HH:mm')}">01/01/2024 10:00</td>
+                                <td>
+                                    <span class="badge" 
+                                          th:classappend="${payment.status == T(com.example.HotelManage.model.Payment.PaymentStatus).COMPLETED ? 'bg-success' :
+                                                          payment.status == T(com.example.HotelManage.model.Payment.PaymentStatus).FAILED ? 'bg-danger' :
+                                                          payment.status == T(com.example.HotelManage.model.Payment.PaymentStatus).REFUNDED ? 'bg-secondary' : 'bg-warning'}"
+                                          th:text="${payment.status.displayName}">Hoàn thành</span>
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a th:href="@{/payments/{id}(id=${payment.id})}" class="btn btn-sm btn-outline-secondary" title="Xem chi tiết">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <a th:href="@{/payments/delete/{id}(id=${payment.id})}" 
+                                           class="btn btn-sm btn-outline-danger" 
+                                           title="Xóa"
+                                           onclick="return confirm('Bạn có chắc muốn xóa thanh toán này?')">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

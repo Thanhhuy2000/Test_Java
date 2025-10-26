@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Book Management</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        body { font-family: 'Roboto', Arial, sans-serif; margin: 0; background: linear-gradient(120deg, #ede9fe 0%, #a78bfa 100%); color: #222; min-height: 100vh; }
+        .container { max-width: 1100px; margin: 40px auto 0 auto; padding: 0 16px; }
+        h1 { color: #6d28d9; margin-bottom: 24px; }
+        .section-title { font-size: 1.3rem; color: #6d28d9; margin-bottom: 12px; font-weight: 700; }
+        .form-section { background: #fff; padding: 28px 36px 24px 36px; border-radius: 18px; box-shadow: 0 4px 24px #a78bfa33; display: flex; flex-wrap: wrap; gap: 18px; align-items: center; margin-bottom: 32px; }
+        .form-section input, .form-section select { flex: 1 1 180px; padding: 12px; border-radius: 8px; border: 1.5px solid #a78bfa; font-size: 1rem; margin: 0 8px 0 0; background: #f8fafc; }
+        .form-section button { padding: 12px 26px; border-radius: 8px; border: none; background: #6d28d9; color: #fff; font-weight: 700; font-size: 1rem; cursor: pointer; margin: 0 8px 0 0; transition: background 0.2s; }
+        .form-section button[type="button"] { background: #ede9fe; color: #6d28d9; }
+        .form-section button[type="button"]:hover { background: #6d28d9; color: #fff; }
+        .search-section { margin-bottom: 18px; }
+        .search-section input { width: 320px; padding: 10px; border-radius: 8px; border: 1.5px solid #a78bfa; font-size: 1rem; }
+        table { border-collapse: collapse; width: 100%; background: #fff; box-shadow: 0 2px 8px #a78bfa44; border-radius: 18px; overflow: hidden; }
+        th, td { border: none; padding: 14px 12px; text-align: left; }
+        th { background: #a78bfa; color: #fff; font-weight: 700; cursor: pointer; user-select: none; }
+        tr:nth-child(even) { background: #f3f0ff; }
+        tr:hover { background: #e0e7ff; transition: background 0.2s; }
+        .action-btn { margin-right: 4px; background: none; border: none; color: #6d28d9; font-size: 1.1rem; cursor: pointer; padding: 6px 10px; border-radius: 4px; transition: background 0.2s, color 0.2s; }
+        .action-btn:hover { background: #fbbf24; color: #6d28d9; }
+        .footer { text-align: center; color: #fff; margin: 60px 0 20px 0; font-size: 1rem; letter-spacing: 1px; }
+        .multiselect { min-width: 180px; }
+        @media (max-width: 900px) {
+            .container { max-width: 98vw; }
+            .form-section { flex-direction: column; gap: 10px; padding: 18px 10px; }
+            .search-section input { width: 100%; }
+            table, th, td { font-size: 0.98rem; }
+        }
+    </style>
+</head>
+<body>
+    <div id="navbar"></div>
+    <div class="container">
+        <h1>Book Management</h1>
+        <form id="bookForm" class="form-section">
+            <input type="hidden" id="bookId">
+            <input type="text" id="title" placeholder="Title" required>
+            <input type="text" id="author" placeholder="Author" required>
+            <input type="number" id="year" placeholder="Year" required>
+            <input type="number" id="price" placeholder="Price" min="0" step="0.01" required>
+            <select id="categories" class="multiselect" multiple required></select>
+            <input type="number" id="quantity" placeholder="Quantity" min="1" value="1" required>
+            <input type="url" id="imageUrl" placeholder="Image URL (optional)">
+            <button type="submit"><i class="fa-solid fa-floppy-disk"></i> Save</button>
+            <button type="button" onclick="resetForm()"><i class="fa-solid fa-eraser"></i> Clear</button>
+        </form>
+        <div class="search-section">
+            <input type="text" id="searchBox" placeholder="Search by name or author...">
+            <select id="filterCategory" style="margin-left:12px;padding:10px;border-radius:8px;border:1.5px solid #a78bfa;font-size:1rem;">
+                <option value="">All categories</option>
+            </select>
+            <button type="button" id="btnStatPrice" style="margin-left:16px;background:#ede9fe;color:#6d28d9;padding:10px 18px;border-radius:8px;border:1.5px solid #a78bfa;font-weight:700;cursor:pointer;">Thống kê theo giá</button>
+            <button type="button" id="btnStatQuantity" style="margin-left:8px;background:#ede9fe;color:#6d28d9;padding:10px 18px;border-radius:8px;border:1.5px solid #a78bfa;font-weight:700;cursor:pointer;">Thống kê theo số lượng</button>
+        </div>
+        <div class="search-section" style="margin-top:8px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;">
+            <span style="color:#6d28d9;font-weight:600;">Tìm kiếm nâng cao:</span>
+            <input type="text" id="advName" placeholder="Tên sách..." style="width:140px;">
+            <input type="number" id="advMinPrice" placeholder="Giá từ" style="width:90px;">
+            <input type="number" id="advMaxPrice" placeholder="Giá đến" style="width:90px;">
+            <button type="button" id="btnAdvSearch" style="background:#6d28d9;color:#fff;padding:8px 18px;border-radius:8px;border:none;font-weight:700;cursor:pointer;">Tìm</button>
+            <button type="button" id="btnAdvReset" style="background:#ede9fe;color:#6d28d9;padding:8px 18px;border-radius:8px;border:1.5px solid #a78bfa;font-weight:700;cursor:pointer;">Xóa</button>
+        </div>
+        <div id="statModal" style="display:none;position:fixed;z-index:2000;left:0;top:0;width:100vw;height:100vh;background:rgba(80,0,120,0.13);align-items:center;justify-content:center;">
+            <div style="background:#fff;min-width:320px;max-width:90vw;padding:28px 24px 18px 24px;border-radius:18px;box-shadow:0 8px 32px #a78bfa55;position:relative;">
+                <button onclick="closeStatModal()" style="position:absolute;top:10px;right:14px;background:none;border:none;font-size:1.3rem;color:#a78bfa;cursor:pointer;"><i class="fa-solid fa-xmark"></i></button>
+                <div id="statModalContent"></div>
+            </div>
+        </div>
+        <table id="booksTable">
+            <thead>
+                <tr>
+                    <th data-sort="id">ID <i class="fa-solid fa-sort"></i></th>
+                    <th data-sort="name">Name <i class="fa-solid fa-sort"></i></th>
+                    <th data-sort="author">Author <i class="fa-solid fa-sort"></i></th>
+                    <th data-sort="year">Year <i class="fa-solid fa-sort"></i></th>
+                    <th data-sort="price">Price <i class="fa-solid fa-sort"></i></th>
+                    <th data-sort="quantity">Quantity <i class="fa-solid fa-sort"></i></th>
+                    <th>Categories</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+    <div class="footer">&copy; 2024 Book Management App &mdash; Powered by Spring Boot &amp; Modern UI</div>
+    <!-- Modal xem chi tiết sách -->
+    <div id="bookDetailModal" style="display:none;position:fixed;z-index:1000;left:0;top:0;width:100vw;height:100vh;background:rgba(80,0,120,0.18);align-items:center;justify-content:center;">
+      <div style="background:#fff;max-width:420px;width:96vw;padding:28px 24px 18px 24px;border-radius:18px;box-shadow:0 8px 32px #a78bfa55;position:relative;">
+        <button onclick="closeBookDetail()" style="position:absolute;top:10px;right:14px;background:none;border:none;font-size:1.3rem;color:#a78bfa;cursor:pointer;"><i class="fa-solid fa-xmark"></i></button>
+        <div id="bookDetailContent"></div>
+      </div>
+    </div>
+    <script>
+    // Load navbar
+    fetch('navbar.html').then(r=>r.text()).then(html=>{document.getElementById('navbar').innerHTML=html;});
+    const apiUrl = '/api/books';
+    const categoryApiUrl = '/api/categories';
+    const tableBody = document.querySelector('#booksTable tbody');
+    const form = document.getElementById('bookForm');
+    const bookId = document.getElementById('bookId');
+    const title = document.getElementById('title');
+    const author = document.getElementById('author');
+    const year = document.getElementById('year');
+    const price = document.getElementById('price');
+    const categories = document.getElementById('categories');
+    const quantity = document.getElementById('quantity');
+    const imageUrl = document.getElementById('imageUrl');
+    let allCategories = [];
+    let books = [];
+    let sortKey = 'id';
+    let sortAsc = true;
+
+    function fetchCategories() {
+        fetch(categoryApiUrl)
+            .then(res => res.json())
+            .then(data => {
+                allCategories = data;
+                categories.innerHTML = '';
+                data.forEach(cat => {
+                    categories.innerHTML += `<option value="${cat.id}">${cat.name}</option>`;
+                });
+                // Populate filter dropdown
+                const filterCategory = document.getElementById('filterCategory');
+                if (filterCategory) {
+                    filterCategory.innerHTML = '<option value="">All categories</option>';
+                    data.forEach(cat => {
+                        filterCategory.innerHTML += `<option value="${cat.id}">${cat.name}</option>`;
+                    });
+                }
+            });
+    }
+
+    function fetchBooks() {
+        fetch(apiUrl)
+            .then(res => res.json())
+            .then(data => {
+                books = data;
+                renderBooks();
+            });
+    }
+
+    function renderBooks() {
+        let sorted = [...books];
+        // Lọc theo từ khóa tìm kiếm
+        const keyword = searchBox.value.trim().toLowerCase();
+        if (keyword) {
+            sorted = sorted.filter(book =>
+                (book.name && book.name.toLowerCase().includes(keyword)) ||
+                (book.author && book.author.toLowerCase().includes(keyword))
+            );
+        }
+        // Lọc theo thể loại
+        const filterCategory = document.getElementById('filterCategory');
+        const selectedCatId = filterCategory ? filterCategory.value : '';
+        if (selectedCatId) {
+            sorted = sorted.filter(book => (book.categories||[]).some(c=>c.id+''===selectedCatId));
+        }
+        // Sắp xếp
+        sorted.sort((a, b) => {
+            let v1 = a[sortKey], v2 = b[sortKey];
+            if (sortKey === 'name' || sortKey === 'author') {
+                v1 = v1 ? v1.toLowerCase() : '';
+                v2 = v2 ? v2.toLowerCase() : '';
+            }
+            if (v1 < v2) return sortAsc ? -1 : 1;
+            if (v1 > v2) return sortAsc ? 1 : -1;
+            return 0;
+        });
+        tableBody.innerHTML = '';
+        sorted.forEach(book => {
+            const cats = (book.categories||[]).map(c=>c.name).join(', ');
+            tableBody.innerHTML += `<tr>
+                <td>${book.id}</td>
+                <td>${book.name}</td>
+                <td>${book.author}</td>
+                <td>${book.year ?? ''}</td>
+                <td>${book.price}</td>
+                <td>${book.quantity ?? 1}</td>
+                <td>${cats}</td>
+                <td>
+                    <button class='action-btn' title='View' onclick='viewBookDetail(${book.id})'><i class="fa-solid fa-eye"></i></button>
+                    <button class='action-btn' title='Edit' onclick='editBook(${JSON.stringify(book)})'><i class="fa-solid fa-pen-to-square"></i></button>
+                    <button class='action-btn' title='Delete' onclick='deleteBook(${book.id})'><i class="fa-solid fa-trash"></i></button>
+                </td>
+            </tr>`;
+        });
+    }
+
+    function editBook(book) {
+        bookId.value = book.id;
+        title.value = book.name;
+        author.value = book.author;
+        year.value = book.year;
+        price.value = book.price;
+        quantity.value = book.quantity ?? 1;
+        imageUrl.value = book.imageUrl || '';
+        // Set selected categories
+        const catIds = (book.categories||[]).map(c=>c.id+"");
+        Array.from(categories.options).forEach(opt => { opt.selected = catIds.includes(opt.value); });
+    }
+    window.editBook = editBook;
+    window.deleteBook = deleteBook;
+
+    function resetForm() {
+        bookId.value = '';
+        title.value = '';
+        author.value = '';
+        year.value = '';
+        price.value = '';
+        quantity.value = 1;
+        imageUrl.value = '';
+        Array.from(categories.options).forEach(opt => { opt.selected = false; });
+    }
+
+    function deleteBook(id) {
+        if (confirm('Delete this book?')) {
+            fetch(`${apiUrl}/${id}`, { method: 'DELETE' })
+                .then(fetchBooks);
+        }
+    }
+
+    form.onsubmit = function(e) {
+        e.preventDefault();
+        const selectedCatIds = Array.from(categories.selectedOptions).map(opt => parseInt(opt.value));
+        const book = {
+            name: title.value,
+            author: author.value,
+            year: parseInt(year.value),
+            price: parseFloat(price.value),
+            quantity: parseInt(quantity.value) || 1,
+            imageUrl: imageUrl.value,
+            categories: selectedCatIds.map(id => ({ id }))
+        };
+        const method = bookId.value ? 'PUT' : 'POST';
+        const url = bookId.value ? `${apiUrl}/${bookId.value}` : apiUrl;
+        fetch(url, {
+            method: method,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(book)
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Failed to save book');
+            return response.json();
+        })
+        .then(() => {
+            fetchBooks();
+            resetForm();
+        })
+        .catch(err => {
+            alert('Error: ' + err.message);
+        });
+    };
+
+    document.querySelectorAll('th[data-sort]').forEach(th => {
+        th.onclick = function() {
+            const key = th.getAttribute('data-sort');
+            if (sortKey === key) sortAsc = !sortAsc; else { sortKey = key; sortAsc = true; }
+            renderBooks();
+        };
+    });
+
+    const searchBox = document.getElementById('searchBox');
+    searchBox.addEventListener('input', function() {
+        renderBooks();
+    });
+
+    const filterCategory = document.getElementById('filterCategory');
+    filterCategory.addEventListener('change', function() {
+        renderBooks();
+    });
+
+    fetchCategories();
+    fetchBooks();
+
+    function viewBookDetail(id) {
+      fetch(`${apiUrl}/${id}`)
+        .then(res => {
+          if (!res.ok) throw new Error('Not found');
+          return res.json();
+        })
+        .then(book => {
+          let cats = (book.categories||[]).map(c=>c.name).join(', ');
+          let html = `<h2 style='color:#6d28d9;margin-bottom:10px;'>${book.name}</h2>`;
+          if(book.imageUrl) html += `<img src='${book.imageUrl}' alt='Book cover' style='max-width:120px;max-height:160px;float:right;margin-left:16px;border-radius:8px;box-shadow:0 2px 8px #a78bfa33;'>`;
+          html += `<div><b>Author:</b> ${book.author||''}</div>`;
+          html += `<div><b>Year:</b> ${book.year||''}</div>`;
+          html += `<div><b>Price:</b> ${book.price} </div>`;
+          html += `<div><b>Quantity:</b> ${book.quantity||1}</div>`;
+          html += `<div><b>Categories:</b> ${cats}</div>`;
+          if(book.description) html += `<div style='margin-top:8px;'><b>Description:</b><br>${book.description}</div>`;
+          document.getElementById('bookDetailContent').innerHTML = html;
+          document.getElementById('bookDetailModal').style.display = 'flex';
+        })
+        .catch(()=>{
+          document.getElementById('bookDetailContent').innerHTML = '<span style="color:red">Book not found!</span>';
+          document.getElementById('bookDetailModal').style.display = 'flex';
+        });
+    }
+    function closeBookDetail() {
+      document.getElementById('bookDetailModal').style.display = 'none';
+    }
+    window.viewBookDetail = viewBookDetail;
+    window.closeBookDetail = closeBookDetail;
+
+    document.getElementById('btnStatPrice').onclick = function() {
+        fetch('/api/books/statistics/price')
+            .then(res => res.json())
+            .then(data => {
+                let html = `<h3 style='color:#6d28d9'>Thống kê số lượng sách theo giá</h3><table style='width:100%;margin-top:10px'><tr><th>Giá</th><th>Số lượng sách</th></tr>`;
+                data.forEach(row => { html += `<tr><td>${row[0]}</td><td>${row[1]}</td></tr>`; });
+                html += '</table>';
+                showStatModal(html);
+            });
+    };
+    document.getElementById('btnStatQuantity').onclick = function() {
+        fetch('/api/books/statistics/quantity')
+            .then(res => res.json())
+            .then(data => {
+                let html = `<h3 style='color:#6d28d9'>Thống kê số lượng sách theo số lượng tồn kho</h3><table style='width:100%;margin-top:10px'><tr><th>Số lượng tồn</th><th>Số sách</th></tr>`;
+                data.forEach(row => { html += `<tr><td>${row[0]}</td><td>${row[1]}</td></tr>`; });
+                html += '</table>';
+                showStatModal(html);
+            });
+    };
+    function showStatModal(html) {
+        document.getElementById('statModalContent').innerHTML = html;
+        document.getElementById('statModal').style.display = 'flex';
+    }
+    function closeStatModal() {
+        document.getElementById('statModal').style.display = 'none';
+    }
+    window.closeStatModal = closeStatModal;
+    // Tìm kiếm nâng cao
+    document.getElementById('btnAdvSearch').onclick = function() {
+        const name = document.getElementById('advName').value.trim();
+        const min = document.getElementById('advMinPrice').value;
+        const max = document.getElementById('advMaxPrice').value;
+        if (name && min && max) {
+            fetch(`/api/books/search/name-price?name=${encodeURIComponent(name)}&min=${min}&max=${max}`)
+                .then(res => res.json())
+                .then(data => { books = data; renderBooks(); });
+        } else if (!name && min && max) {
+            fetch(`/api/books/search/price?min=${min}&max=${max}`)
+                .then(res => res.json())
+                .then(data => { books = data; renderBooks(); });
+        } else if (!name && min && !max) {
+            fetch(`/api/books/search/price?min=${min}&max=${min}`)
+                .then(res => res.json())
+                .then(data => { books = data; renderBooks(); });
+        } else if (!name && !min && max) {
+            fetch(`/api/books/search/price?min=0&max=${max}`)
+                .then(res => res.json())
+                .then(data => { books = data; renderBooks(); });
+        } else {
+            alert('Vui lòng nhập đủ khoảng giá hoặc tên + giá!');
+        }
+    };
+    document.getElementById('btnAdvReset').onclick = function() {
+        document.getElementById('advName').value = '';
+        document.getElementById('advMinPrice').value = '';
+        document.getElementById('advMaxPrice').value = '';
+        fetchBooks();
+    };
+    </script>
+</body>
+</html>

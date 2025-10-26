@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: html(pageTitle='Quản lý phòng', activePage='rooms', ~{:: #pageActions}, ~{:: #content})}">
+<head>
+    <title>Quản lý phòng</title>
+</head>
+<body>
+    <div id="pageActions">
+        <a href="/rooms/new" class="btn btn-primary">
+            <i class="bi bi-plus-circle me-2"></i>Thêm phòng mới
+        </a>
+    </div>
+    
+    <div id="content">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-door-open me-2"></i>Danh sách phòng
+            </div>
+            <div class="card-body">
+                <div th:if="${rooms.empty}" class="text-center text-muted py-5">
+                    <i class="bi bi-inbox fs-1"></i>
+                    <p class="mb-0 mt-3">Chưa có phòng nào. Hãy thêm phòng mới!</p>
+                </div>
+                
+                <div th:if="${!rooms.empty}" class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Số phòng</th>
+                                <th>Loại phòng</th>
+                                <th>Giá/đêm</th>
+                                <th>Sức chứa</th>
+                                <th>Tầng</th>
+                                <th>Trạng thái</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="room : ${rooms}">
+                                <td>
+                                    <strong th:text="${room.roomNumber}">101</strong>
+                                </td>
+                                <td th:text="${room.roomType.displayName}">Single</td>
+                                <td>
+                                    <span th:text="${#numbers.formatDecimal(room.pricePerNight, 0, 'POINT', 0, 'COMMA')}">500000</span> đ
+                                </td>
+                                <td th:text="${room.maxOccupancy}">2</td>
+                                <td th:text="${room.floor}">1</td>
+                                <td>
+                                    <span class="badge" 
+                                          th:classappend="${room.status == T(com.example.HotelManage.model.Room.RoomStatus).AVAILABLE ? 'bg-success' :
+                                                          room.status == T(com.example.HotelManage.model.Room.RoomStatus).OCCUPIED ? 'bg-warning' :
+                                                          room.status == T(com.example.HotelManage.model.Room.RoomStatus).RESERVED ? 'bg-info' :
+                                                          room.status == T(com.example.HotelManage.model.Room.RoomStatus).MAINTENANCE ? 'bg-danger' : 'bg-secondary'}"
+                                          th:text="${room.status.displayName}">Còn trống</span>
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a th:href="@{/rooms/{id}(id=${room.id})}" class="btn btn-sm btn-outline-info" title="Xem chi tiết">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <a th:href="@{/rooms/edit/{id}(id=${room.id})}" class="btn btn-sm btn-outline-primary" title="Sửa">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <a th:href="@{/rooms/delete/{id}(id=${room.id})}" 
+                                           class="btn btn-sm btn-outline-danger" 
+                                           title="Xóa"
+                                           onclick="return confirm('Bạn có chắc muốn xóa phòng này?')">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
