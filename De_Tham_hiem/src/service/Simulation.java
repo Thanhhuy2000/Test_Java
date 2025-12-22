@@ -75,7 +75,7 @@ public class Simulation {
         }
         System.out.println();
 
-        // Bat dau chay mo phong
+        // Chay mo phong
         while(!state.checkEnd()){
             Team team = teams.get(0);
             List<Challenge> challenges = team.getChallenges();

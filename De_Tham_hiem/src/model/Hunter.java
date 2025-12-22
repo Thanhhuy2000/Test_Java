@@ -3,7 +3,7 @@ package model;
 import exception.InvalidException;
 
 public class Hunter extends Explorer{
-    private double combatSkill; // 0 - 1
+    private double combatSkill;
 
     public Hunter(int id, String name, int stamina, double combatSkill) throws InvalidException {
         super(id, name, stamina, Role.HUNTER);
