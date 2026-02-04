@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Admin - Thêm phòng</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-light">
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-6">
+                <div class="card shadow border-0 rounded-4">
+                    <div class="card-header bg-primary text-white py-3">
+                        <h4 class="mb-0 fw-bold text-center">
+                            <i class="fa-solid fa-hotel me-2"></i>THÊM / SỬA PHÒNG
+                        </h4>
+                    </div>
+                    <div class="card-body p-4">
+                        <form th:action="@{/admin/rooms/save}" th:object="${room}" method="post" enctype="multipart/form-data">
+                            <input type="hidden" th:field="*{id}" />
+                            
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Số phòng</label>
+                                    <input type="text" th:field="*{roomNumber}" class="form-control" placeholder="Ví dụ: 101" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Loại phòng</label>
+                                    <select th:field="*{type}" class="form-select">
+                                        <option value="Single">Single (Đơn)</option>
+                                        <option value="Double">Double (Đôi)</option>
+                                        <option value="VIP">VIP</option>
+                                        <option value="Suite">Suite</option>
+                                    </select>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label fw-bold">Giá phòng (VNĐ/đêm)</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">₫</span>
+                                        <input type="number" th:field="*{price}" class="form-control" placeholder="0" required>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label fw-bold">Hình ảnh</label>
+                                    <input type="file" name="imageFile" class="form-control" accept="image/*">
+                                    <div class="form-text small">Chấp nhận ảnh JPG, PNG.</div>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label fw-bold">Mô tả chi tiết</label>
+                                    <textarea th:field="*{description}" class="form-control" rows="4" placeholder="Mô tả tiện nghi, hướng nhìn..."></textarea>
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-between mt-4">
+                                <a href="/admin/rooms" class="btn btn-secondary px-4">Hủy bỏ</a>
+                                <button type="submit" class="btn btn-success px-4 fw-bold">
+                                    <i class="fa-solid fa-save me-2"></i>Lưu thông tin
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
